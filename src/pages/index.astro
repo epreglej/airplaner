@@ -1,5 +1,5 @@
 ---
-import '../styles/styles.css';
+import "../styles/styles.css";
 ---
 
 <html lang="en">
@@ -10,7 +10,44 @@ import '../styles/styles.css';
         <meta name="generator" content={Astro.generator} />
         <title>Astro</title>
     </head>
-    <body class="p-8 bg-slate-900 text-white font-serif">
-        <p class="text-green-300 text-2xl">Almost before you knew it, we'd touched ground.</p>
+    <body class="bg-slate-100 text-white">
+        <header class="bg-amber-300">
+            <p class="text-slate-900 px-6 pt-4 text-4xl text-center">
+                Airplaner
+            </p>
+            <div class="px-6 py-4">
+                <div class="py-1">
+                    <input
+                        name="search"
+                        type="text"
+                        class="bg-slate-50 border-none text-black w-full px-4 py-2 rounded-t-md"
+                    />
+                </div>
+                <div class="pb-1">
+                    <input
+                        name="search"
+                        type="text"
+                        class="bg-slate-50 border-none text-black w-full px-4 py-2"
+                    />
+                </div>
+                <div class="flex space-x-1 pb-1">
+                    <input
+                        name="search"
+                        type="text"
+                        class="bg-slate-50 border-none text-black w-1/2 px-4 py-2 rounded-bl-md"
+                    />
+                    <input
+                        name="search"
+                        type="text"
+                        class="bg-slate-50 border-none text-black w-1/2 px-4 py-2 rounded-br-md"
+                    />
+                </div>
+                <button
+                    class="bg-blue-800 text-white w-full px-4 py-2 rounded-md"
+                >
+                    Search
+                </button>
+            </div>
+        </header>
     </body>
 </html>
