@@ -1,5 +1,6 @@
 ---
 import "../styles/styles.css";
+import AirportSelector from "@components/AirportSelector.astro";
 ---
 
 <html lang="en">
@@ -9,26 +10,29 @@ import "../styles/styles.css";
         <meta name="viewport" content="width=device-width" />
         <meta name="generator" content={Astro.generator} />
         <title>Astro</title>
+        <!-- Alpine Plugins -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js"
+        ></script>
+
+        <!-- Alpine Core -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+        ></script>
     </head>
     <body class="bg-slate-100 text-white">
-        <header class="bg-amber-300">
+        <header class="bg-yellow-400">
             <p class="text-slate-900 px-6 pt-4 text-4xl text-center">
                 Airplaner
             </p>
             <div class="px-6 py-4">
                 <div class="py-1">
-                    <input
-                        name="search"
-                        type="text"
-                        class="bg-slate-50 border-none text-black w-full px-4 py-2 rounded-t-md"
-                    />
+                    <AirportSelector label="Origin" />
                 </div>
                 <div class="pb-1">
-                    <input
-                        name="search"
-                        type="text"
-                        class="bg-slate-50 border-none text-black w-full px-4 py-2"
-                    />
+                    <AirportSelector label="Destination" />
                 </div>
                 <div class="flex space-x-1 pb-1">
                     <input
@@ -51,3 +55,5 @@ import "../styles/styles.css";
         </header>
     </body>
 </html>
+
+<script></script>
