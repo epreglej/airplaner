@@ -1,27 +1,11 @@
 ---
 const { label } = Astro.props;
+const input_id = label.toLowerCase() + "-input";
 ---
 
 <div
     x-data="{
-        allOptions: [
-            {
-                label: 'Acura',
-                value: 'Acura'
-            },
-            {
-                label: 'Alfa Romeo',
-                value: 'Alfa Romeo'
-            },
-            {
-                label: 'Aston Martin',
-                value: 'Aston Martin'
-            },
-            {
-                label: 'Audi',
-                value: 'Audi'
-            },
-        ],
+        allOptions: [],
         options: [],
         isOpen: false,
         openedWithKeyboard: false,
@@ -34,7 +18,7 @@ const { label } = Astro.props;
         },
         getFilteredOptions(query) {
             this.options = this.allOptions.filter((option) =>
-                option.label.toLowerCase().includes(query.toLowerCase()),
+                option.name.toLowerCase().includes(query.toLowerCase()),
             )
             if (this.options.length === 0) {
                 this.$refs.noResultsMessage.classList.remove('hidden')
@@ -52,47 +36,73 @@ const { label } = Astro.props;
     class="flex w-full flex-col"
     x-on:keydown="handleKeydownOnOptions($event)"
     x-on:keydown.esc.window="isOpen = false, openedWithKeyboard = false"
-    x-init="options = allOptions"
+    x-init="fetch('https://www.ryanair.com/api/views/locate/5/airports/en/active')
+                .then(response => response.json())
+                .then(data => {
+                        allOptions = data; // Assign fetched data to allOptions
+                        options = data; // Also assign fetched data to options
+                })"
 >
-    <label for="make" class="w-fit pl-0.5 text-sm text-neutral-600">
-        {label}
-    </label>
     <div class="relative">
         <!-- trigger button  -->
         <button
             type="button"
-            class="inline-flex w-full h-10 items-center justify-between gap-2 rounded-none bg-neutral-100 px-4 py-2 text-sm font-medium tracking-wide text-neutral-600 transition hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            class="inline-flex w-full h-10 items-center justify-between gap-2 rounded-none bg-neutral-100 px-4 py-2 text-sm font-medium tracking-wide text-neutral-600 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
             role="combobox"
             aria-controls="makesList"
             aria-haspopup="listbox"
+            x-data={`{ label: '${label}'}`}
             x-on:click="isOpen = ! isOpen"
             x-on:keydown.down.prevent="openedWithKeyboard = true"
             x-on:keydown.enter.prevent="openedWithKeyboard = true"
             x-on:keydown.space.prevent="openedWithKeyboard = true"
             x-bind:aria-expanded="isOpen || openedWithKeyboard"
-            x-bind:aria-label="selectedOption ? selectedOption.value : 'Please Select'"
+            x-bind:aria-label="selectedOption ? selectedOption.value : label"
         >
             <span
                 class="text-sm font-normal"
-                x-text="selectedOption ? selectedOption.value : 'Please Select'"
-            ></span>
+                x-text="selectedOption ? selectedOption.name : label"></span>
             <!-- Chevron  -->
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                class="size-5"
-                aria-hidden="true"
-            >
-                <path
-                    fill-rule="evenodd"
-                    d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
-                    clip-rule="evenodd"></path>
-            </svg>
+            <template x-if="!selectedOption">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-5"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="m19.5 8.25-7.5 7.5-7.5-7.5"></path>
+                </svg>
+            </template>
+
+            <template x-if="selectedOption">
+                <button
+                    @click.stop="selectedOption=null"
+                    class="hover:outline-1"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="size-5"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 18 18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </template>
         </button>
 
         <!-- Hidden Input To Grab The Selected Value  -->
-        <input id="make" name="make" x-ref="hiddenTextField" hidden="" />
+        <input id={input_id} name={label} x-ref="hiddenTextField" hidden="" />
         <div
             x-show="isOpen || openedWithKeyboard"
             id="makesList"
@@ -127,6 +137,7 @@ const { label } = Astro.props;
                     class="w-full h-10 border-b borderneutral-300 bg-neutral-100 py-2.5 pl-11 pr-4 text-sm text-neutral-600 focus:outline-none focus-visible:border-black disabled:cursor-not-allowed disabled:opacity-75"
                     name="searchField"
                     aria-label="Search"
+                    x-trap="isOpen"
                     x-on:input="getFilteredOptions($el.value)"
                     x-ref="searchField"
                     placeholder="Search"
@@ -143,7 +154,7 @@ const { label } = Astro.props;
                 </li>
                 <template
                     x-for="(item, index) in options"
-                    x-bind:key="item.value"
+                    x-bind:key="item.code"
                 >
                     <li
                         class="combobox-option inline-flex cursor-pointer justify-between gap-6 bg-neutral-100 px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-800/5 hover:text-neutral-900 focus-visible:bg-neutral-800/5 focus-visible:text-neutral-900 focus-visible:outline-none"
@@ -156,7 +167,7 @@ const { label } = Astro.props;
                         <!-- Label  -->
                         <span
                             x-bind:class="selectedOption == item ? 'font-bold' : null"
-                            x-text="item.label"></span>
+                            x-text="item.name"></span>
                         <!-- Screen reader 'selected' indicator  -->
                         <span
                             class="sr-only"
