@@ -4,7 +4,7 @@ const input_id = label.toLowerCase() + "-input";
 ---
 
 <div
-    x-data="{
+    x-data=`{ label: '${label}',
         allOptions: [],
         options: [],
         isOpen: false,
@@ -32,7 +32,7 @@ const input_id = label.toLowerCase() + "-input";
                 this.$refs.searchField.focus()
             }
         },
-    }"
+    }`
     class="flex w-full flex-col"
     x-on:keydown="handleKeydownOnOptions($event)"
     x-on:keydown.esc.window="isOpen = false, openedWithKeyboard = false"
@@ -41,7 +41,13 @@ const input_id = label.toLowerCase() + "-input";
                 .then(data => {
                         allOptions = data; // Assign fetched data to allOptions
                         options = data; // Also assign fetched data to options
-                })"
+                });
+            if(label == 'Origin'){
+                fetch('https://www.ryanair.com/api/geoloc/v5/defaultAirport?market={{locale}}')
+                .then(response => response.json())
+                .then(data => selectedOption = data);
+            }
+            "
 >
     <div class="relative">
         <!-- trigger button  -->
@@ -59,9 +65,27 @@ const input_id = label.toLowerCase() + "-input";
             x-bind:aria-expanded="isOpen || openedWithKeyboard"
             x-bind:aria-label="selectedOption ? selectedOption.value : label"
         >
-            <span
-                class="text-sm font-normal"
-                x-text="selectedOption ? selectedOption.name : label"></span>
+            <div class="inline-flex gap-2">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-5 text-neutral-600/50"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
+                    ></path>
+                </svg>
+
+                <span
+                    class="text-sm font-normal"
+                    x-text="selectedOption ? selectedOption.name : label"
+                ></span>
+            </div>
             <!-- Chevron  -->
             <template x-if="!selectedOption">
                 <svg
